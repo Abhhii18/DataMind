@@ -14,10 +14,10 @@ ENV/
 .venv
 
 # Database files
-*.db
-*.sqlite
-*.sqlite3
-data/*.db
+# *.db
+# *.sqlite
+# *.sqlite3
+# data/*.db
 
 # IDE
 .vscode/
