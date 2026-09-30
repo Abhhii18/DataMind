@@ -196,41 +196,32 @@ if "messages" not in st.session_state:
     st.session_state.messages = []
     st.session_state.clicked_question = None
 
-# Check if user clicked an example question
+def process_prompt(prompt: str):
+    """Append a user question and assistant answer once, then let the history loop render them."""
+    st.session_state.messages.append({"role": "user", "content": prompt})
+
+    with st.spinner("🔍 Analyzing your database..."):
+        answer = ask_database(prompt)
+
+    st.session_state.messages.append({"role": "assistant", "content": answer})
+
+
+# Process example questions before rendering the chat history
 if st.session_state.clicked_question:
     prompt = st.session_state.clicked_question
     st.session_state.clicked_question = None  # Reset
-    
-    # Add to chat and process
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    
-    with st.chat_message("user"):
-        st.markdown(prompt)
-    
-    with st.chat_message("assistant"):
-        with st.spinner("🔍 Analyzing your database..."):
-            answer = ask_database(prompt)
-            st.markdown(answer)
-            st.session_state.messages.append({"role": "assistant", "content": answer})
-
-# Display chat history
-for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.markdown(message["content"])
+    process_prompt(prompt)
+    st.rerun()
 
 # Chat input
 if prompt := st.chat_input("💬 Ask a question about your data..."):
-    # Add user message
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    with st.chat_message("user"):
-        st.markdown(prompt)
-    
-    # Get AI response
-    with st.chat_message("assistant"):
-        with st.spinner("🔍 Analyzing your database..."):
-            answer = ask_database(prompt)
-            st.markdown(answer)
-            st.session_state.messages.append({"role": "assistant", "content": answer})
+    process_prompt(prompt)
+    st.rerun()
+
+# Display chat history after the submit handling is complete
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
 
 # Footer
 st.markdown("---")

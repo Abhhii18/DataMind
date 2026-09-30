@@ -17,7 +17,12 @@ from data.db_connect import engine, get_database_schema
 load_dotenv()
 
 # Initialize the OpenAI client
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+#client = OpenAI(api_key=os.getenv("OPENAI_API_KEY_QWEN"))
+client = OpenAI(
+    api_key=os.getenv("OPENROUTER_API_KEY"),
+    base_url="https://openrouter.ai/api/v1"
+)
+
 
 def is_safe_query(sql_query: str) -> bool:
     """
@@ -63,7 +68,7 @@ Important rules:
 
         # PHASE 1: GENERATE SQL
         response = client.chat.completions.create(
-            model="gpt-4o-mini",
+            model="qwen/qwen3-32b",
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": question}
